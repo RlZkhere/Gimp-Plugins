@@ -6,6 +6,8 @@ def controlla_bianco(cartella):
  pwd=os.getcwd()
  print('Quanti pixel controllare:')
  numero_pixel=input()
+ print('Inserisci 0 per verticale, 1 per orizzontale')
+ scelta=input()
  for foto in os.listdir(pwd):
   errori=int(0)
   if '.jpg' in foto:    
@@ -17,7 +19,11 @@ def controlla_bianco(cartella):
    altezza=immagine.height
    larghezza=immagine.width
    nuova_larghezza = larghezza - numero_pixel
-   pdb.gimp_image_crop(immagine,numero_pixel,altezza,nuova_larghezza,0) #TAGLIA LA FOTO ESCLUDENDO 0 PIXEL DA DESTRA E (PIXEL TOTALI-TAGLIATI) DA SINISTRA
+   nuova_altezza = altezza - numero_pixel
+   if scelta == 0:
+    pdb.gimp_image_crop(immagine,larghezza,numero_pixel,0,nuova_altezza)  #TAGLIA LA FOTO ESCLUDENDO 0 PIXEL DALL ALTO E (PIXEL TOTALI-TAGLIATI) DAL BASSO --> FOTO ORIZZONTALE 
+   else:
+    pdb.gimp_image_crop(immagine,numero_pixel,altezza,nuova_larghezza,0) #TAGLIA LA FOTO ESCLUDENDO 0 PIXEL DA DESTRA E (PIXEL TOTALI-TAGLIATI) DA SINISTRA --> FOTO VERTICALE
    livello=immagine.active_layer
    pdb.file_png_save_defaults(immagine,livello,percorso_output,percorso_output) #SALVA LA FOTO DEL BORDO DESTRO CON 1_ DAVANTI AL NOME
    pdb.gimp_image_delete(immagine)
@@ -39,10 +45,12 @@ def controlla_bianco(cartella):
    pdb.gimp_image_delete(bordo_destro)
    os.remove(percorso_output)
    if errori == 0: #QUA DEVO RIAPRIRE LA FOTO E RIFARE IL CONTROLLO
-    print('1_'+foto)
     pixels=[]
     immagine=pdb.gimp_file_load(percorso_file,percorso_file)
-    pdb.gimp_image_crop(immagine,numero_pixel,altezza,0,0)
+    if scelta == 1:
+     pdb.gimp_image_crop(immagine,numero_pixel,altezza,0,0) #CONTROLLA ORIZZONTALMENTE
+    else:
+     pdb.gimp_image_crop(immagine,larghezza,numero_pixel,0,0) #CONTROLLA VERTICALMENTE
     livello=immagine.active_layer
     pdb.file_png_save_defaults(immagine,livello,percorso_output_2,percorso_output_2)
     pdb.gimp_image_delete(immagine)
