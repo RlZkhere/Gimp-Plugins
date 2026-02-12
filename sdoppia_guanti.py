@@ -31,7 +31,7 @@ def sdoppia(cartella):
    pdb.gimp_layer_set_offsets(livello_sopra,0,600) #UNISCE UNO ACCANTO ALL ALTRO
    pdb.gimp_layer_set_offsets(livello_sotto,1200,600) #UNISCE UNO ACCANTO ALL ALTRO
    #pdb.gimp_layer_set_offsets(livello_sopra,600,0) UNISCE UNO SOTTO L ALTRO
-   #pdb.gimp_layer_set_offsets(livello_sopra,600,1200) UNISCE UNO SOTTO L ALTRO
+   #pdb.gimp_layer_set_offsets(livello_sotto,600,1200) UNISCE UNO SOTTO L ALTRO
    unite=pdb.gimp_image_merge_visible_layers(sfondo, CLIP_TO_IMAGE)
    pdb.file_png_save_defaults(sfondo, unite, percorso_output, percorso_output)
    pdb.gimp_image_delete(immagine_1)
