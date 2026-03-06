@@ -1,0 +1,88 @@
+#!/usr/bin/python2
+from gimpfu import *
+import os
+def unisci_foto(cartella):
+ percorso_base = os.getcwd()
+ lista_cartelle = os.listdir(percorso_base)
+ for cartella in lista_cartelle:
+  percorso_cartella = percorso_base + '/' + cartella
+  if cartella != 'OUTPUT':
+   listafile=os.listdir(percorso_cartella)
+   for file in listafile:
+    percorso_attuale=percorso_cartella
+    print(percorso_attuale)
+    if 'jpg' in file:
+     foto_1=percorso_attuale+'/foto_1.jpg' #FOTO KIT BAULETTO
+     foto_2=percorso_attuale+'/foto_2.jpg' #FOTO VALIGIA
+     foto_3=percorso_attuale+'/foto_3.jpg' #FOTO BAULETTO
+     foto_4=percorso_attuale+'/attacco.jpg' #FOTO ATTACCO
+     output_kit_bauletto=percorso_attuale+'/OUTPUT/kit_bauletto.jpg'
+     output_valigia=percorso_attuale+'/OUTPUT/valigia.jpg'
+     output_bauletto=percorso_attuale+'/OUTPUT/bauletto.jpg'
+     output_finale=percorso_attuale+'/OUTPUT/finale.jpg'
+     immagine_1=pdb.gimp_file_load(foto_1,foto_1)
+     livello_kit_bauletto=immagine_1.active_layer
+     h_taglia_bauletto=450
+     w_taglia_bauletto=1200
+     foto_kit_bauletto=pdb.gimp_image_crop(immagine_1,w_taglia_bauletto,h_taglia_bauletto,0,750) #TAGLIA LA FOTO PRENDENDO I 450PX DAL BASSO
+     livello_kit_bauletto=immagine_1.active_layer
+     pdb.gimp_context_set_interpolation(INTERPOLATION_CUBIC)
+     pdb.gimp_image_scale(immagine_1,1200/0.75,450/0.75)
+     pdb.file_png_save_defaults(foto_kit_bauletto,livello_kit_bauletto,output_kit_bauletto,output_kit_bauletto) #SALVA FOTO KIT BAULETTO
+     pdb.gimp_image_delete(immagine_1) #CHIUDE FOTO KIT BAULETTO
+     '''
+     QUESTO BLOCCO SERVE PER FARE RITAGLIO AUTOMATICO FOTO VALIGIA E FOTO BAULETTO
+     immagine_2=pdb.gimp_file_load(foto_2,foto_2) #APRE FOTO VALIGIA
+     livello_valigia=immagine_2.active_layer
+     pdb.plug_in_autocrop(immagine_2,livello_valigia) #FA TAGLIO AUTOMATICO VALIGA
+     livello_valigia=immagine_2.active_layer
+     pdb.file_png_save_defaults(immagine_2,livello_valigia,output_valigia,output_valigia) #SALVA FOTO VALIGIA
+     pdb.gimp_image_delete(immagine_2)
+     immagine_3=pdb.gimp_file_load(foto_3,foto_3) #APRE FOTO VALIGIA
+     livello_bauletto=immagine_3.active_layer
+     pdb.plug_in_autocrop(immagine_3,livello_bauletto) #FA TAGLIO AUTOMATICO VALIGA
+     livello_bauletto=immagine_3.active_layer
+     pdb.file_png_save_defaults(immagine_3,livello_bauletto,output_bauletto,output_bauletto) #SALVA FOTO VALIGIA
+     pdb.gimp_image_delete(immagine_3)
+     '''
+     #FINO A QUA HA CREATO TUTTE LE FOTO TEMPORANEE NECESSARIE
+     foto_kit_bauletto_ok=pdb.gimp_file_load(output_kit_bauletto,output_kit_bauletto)
+     foto_bauletto_ok=pdb.gimp_file_load(foto_3,foto_3)
+     foto_valigia_ok=pdb.gimp_file_load(foto_2,foto_2)
+     foto_telaio=pdb.gimp_file_load(foto_4,foto_4)
+     foto_finale = pdb.gimp_image_new(2400, 2400, RGB) #HA APERTO TUTTE LE FOTO TEMPORANEE, IN QUESTA RIGA CREA IL FILE RGB 2400X2400
+     sfondo=pdb.gimp_layer_new(foto_finale,2400,2400,RGB_IMAGE,"Sfondo",100,NORMAL_MODE)
+     pdb.gimp_image_insert_layer(foto_finale,sfondo,None,0) #INSERISCE LO SFONDO BIANCO NELLA FOTO
+     pdb.gimp_context_set_foreground((255,255,255))
+     pdb.gimp_drawable_fill(sfondo,FOREGROUND_FILL)
+     parte_bauletto=pdb.gimp_layer_new_from_drawable(foto_bauletto_ok.active_layer,foto_finale) #PRENDE LIVELLO BAULETTO
+     pdb.gimp_image_insert_layer(foto_finale,parte_bauletto,None,0)
+     pdb.gimp_layer_set_offsets(parte_bauletto,0,100) #SPOSTA LIVELLO 0PX DA SINISTRA, 100 DALL ALTO
+     parte_valigia=pdb.gimp_layer_new_from_drawable(foto_valigia_ok.active_layer,foto_finale) #PRENDE LIVELLO VALIGIA
+     pdb.gimp_image_insert_layer(foto_finale,parte_valigia,None,0)
+     pdb.gimp_layer_set_offsets(parte_valigia,1200,500) #SPOSTA LIVELLO 1200PX DA SINISTRA, 500 DALL ALTO
+     parte_kit_bauletto=pdb.gimp_layer_new_from_drawable(foto_kit_bauletto_ok.active_layer,foto_finale) #PRENDE LIVELLO KIT BAULETTO
+     pdb.gimp_image_insert_layer(foto_finale,parte_kit_bauletto,None,0)
+     pdb.gimp_layer_set_offsets(parte_kit_bauletto,100,1700) #SPOSTA LIVELLO 100PX DA SINISTRA,1700 DALL ALTO
+     parte_attacco=pdb.gimp_layer_new_from_drawable(foto_telaio.active_layer,foto_finale) #PRENDE LIVELLO TELAIO
+     pdb.gimp_image_insert_layer(foto_finale,parte_attacco,None,0)
+     pdb.gimp_layer_set_offsets(parte_attacco,1700,1700)
+     livello=pdb.gimp_image_merge_visible_layers(foto_finale, CLIP_TO_IMAGE) #PRENDE LIVELLO FINALE DI TUTTI QUELLI UNITI
+     pdb.file_png_save_defaults(foto_finale,livello,output_finale,output_finale) #QUESTO SALVA FOTO FINALE CON BAULETTO IN POSIZIONE CORRETTA
+     pdb.gimp_image_delete(foto_finale)
+register(
+"python-fu-batch-foto-trittico",
+"Unisce foto kit trittico",
+"Mette foto bauletto accanto a foto valigia, sotto attacchi e telaietto",
+"Khere",
+"Khere",
+"06-03-2026",
+"",
+"",
+[
+(PF_DIRNAME,"cartella","Cartella che contiene tutte le foto",None),
+],
+[],
+unisci_foto
+)
+main()
